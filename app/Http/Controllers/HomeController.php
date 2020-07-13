@@ -11,11 +11,15 @@ class HomeController extends Controller
      *  
      * @return void
      */
-    /** this use of the constructor makes it so that if you want to use this whole controller and its routes, you need to be logged in **/
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
+    
+    /**** this use of the commented constructor below would make it so that if you want to use this * whole controller and its routes, you need to be logged in.
+    *
+    * Since this makes things harder in the long run, we're going to use the middleware directly * on the routes instead. Kepping the code for reference ****/
+
+    // public function __construct()
+    // {
+    //     $this->middleware('auth');
+    // }
 
     /**
      * Show the application dashboard.
@@ -27,3 +31,4 @@ class HomeController extends Controller
         return view('home');
     }
 }
+ 
