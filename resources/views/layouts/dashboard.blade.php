@@ -50,9 +50,9 @@
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#">
+              <a class="nav-link" href="{{route('admin.posts.index')}}">
                 <span data-feather="file"></span>
-                Orders
+                Posts
               </a>
             </li>
             <li class="nav-item">
