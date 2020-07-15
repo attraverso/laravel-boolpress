@@ -33,6 +33,13 @@
             <option value="{{$category->id}}">{{$category->name}}</option>
           @endforeach
         </select>
+        <div class="form-group">
+          <label for="post-tags">Tags</label>
+          @foreach ($tags as $tag)
+            <input type="checkbox" name="" id="post-tags" value="">
+            <label for="post-tags">Tags</label>
+          @endforeach
+        </div>
       </div>
       <button type="submit" class="btn btn-primary">Save</a>
     </form>

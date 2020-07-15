@@ -8,7 +8,7 @@
   </div>
   <div class=" p-2 border border-secondary">
     <p>{{$post->content}}</p>
-    <p><small>Category: {{$post->category->name ?? '-'}}</small></p>
+    <p><small>Category: <a href="{{route('categories.show', ['category' => $post->category->slug])}}">{{$post->category->name ?? '-'}}</a></small></p>
   </div>
 </div>
 @endsection

@@ -15,6 +15,7 @@
               <th>Title</th>
               <th>Slug</th>
               <th>Category</th>
+              <th>Tags</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -24,7 +25,8 @@
                 <td>{{$post->id}}</td>
                 <td>{{$post->title}}</td>
                 <td>{{$post->slug}}</td>
-                <td>{{$post->category->name ?? '-'}}</td>
+                <td><a href="{{route('categories.show', ['category', $post->category->id])}}">{{$post->category->name ?? '-'}}</a></td>
+                <td>*placeholder*</td>
                 <td>
                   <a href="{{route('admin.posts.show', ['post' => $post->id])}} " class="btn btn-info text-light">Details</a>
                   <a href="{{route('admin.posts.edit', ['post' => $post->id])}}" class="btn btn-warning">Edit</a>

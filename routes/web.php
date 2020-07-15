@@ -15,8 +15,13 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::get('/', 'HomeController@index')->name('home');
+Route::get('/404', 'HomeController@e404')->name('404');
 Route::get('/posts', 'PostController@index')->name('posts.index');
 Route::get('/posts/{post}', 'PostController@show')->name('posts.show');
+Route::get('/categories', 'CategoryController@index')->name('categories.index');
+Route::get('/categories/{category}', 'CategoryController@show')->name('categories.show');
+
+
 
 
 /*auto generates the routes needed for authentication */
@@ -41,4 +46,5 @@ Route::prefix('admin')->namespace('Admin')->name('admin.')->middleware('auth')->
   Route::get('/', 'HomeController@index')->name('home');
   Route::resource('/posts', 'PostController');
   Route::get('/posts/{post}/previewdelete', 'PostController@previewdelete')->name('posts.previewdelete');
+  Route::resource('/categories', 'CategoryController');
 });
