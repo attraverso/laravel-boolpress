@@ -17,11 +17,11 @@
       @method('PUT')
       <div class="form-group mt-3">
         <label for="post-title">Title</label>
-        <input type="text" class="form-control" id="post-title" name="title" placeholder="Engaging title" value="{{old('title'), $post->title}} ">
+        <input type="text" class="form-control" id="post-title" name="title" placeholder="Engaging title" value="{{old('title', $post->title)}} ">
       </div>
       <div class="form-group">
         <label for="post-content">Content</label>
-        <textarea class="form-control" id="post-content" name="content" placeholder="Inspiring post">{{old('content'), $post->content}}</textarea>
+        <textarea class="form-control" id="post-content" name="content" placeholder="Inspiring post">{{old('content', $post->content)}}</textarea>
       </div>
       <button type="submit" class="btn btn-primary">Save</a>
     </form>

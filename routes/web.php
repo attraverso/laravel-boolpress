@@ -37,4 +37,5 @@ Route::prefix('admin')->namespace('Admin')->name('admin.')->middleware('auth')->
   /**same route as the COMMENTED one above*/
   Route::get('/', 'HomeController@index')->name('home');
   Route::resource('/posts', 'PostController');
+  Route::get('/previewdelete', 'PostController@previewdelete')->name('posts.previewdelete');
 });

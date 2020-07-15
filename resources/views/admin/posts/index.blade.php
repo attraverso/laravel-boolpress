@@ -24,12 +24,12 @@
                 <td>{{$post->title}}</td>
                 <td>{{$post->slug}}</td>
                 <td>
-                  <a href="{{route('admin.posts.show', ['post' => $post->id])}} " class="btn btn-info">Details</a>
+                  <a href="{{route('admin.posts.show', ['post' => $post->id])}} " class="btn btn-info text-light">Details</a>
                   <a href="{{route('admin.posts.edit', ['post' => $post->id])}}" class="btn btn-warning">Edit</a>
-                  <form class="d-inline " action="{{route('admin.posts.destroy', ['post' => $post->id])}}" method="post">
+                  <form class="d-inline" action="{{route('admin.posts.destroy', ['post' => $post->id])}}" method="post">
                     @csrf
                     @method('DELETE')
-                    <a class="btn btn-danger">Delete</a>
+                    <button type="submit" class="btn btn-danger">Delete</button>
                   </form>
                 </td>
               </tr>

@@ -22,6 +22,14 @@
         <label for="post-content">Content</label>
         <input type="textarea" class="form-control" id="post-content" name="content" placeholder="Inspiring post" value="{{old('content')}} ">
       </div>
+      <div class="form-group">
+        <label for="post-category">Category</label>
+        <select name="category_id" id="post-category">
+          @foreach ($categories as $category)
+            <option value="{{$category->id}} ">{{$category->name}}</option>
+          @endforeach
+        </select>
+      </div>
       <button type="submit" class="btn btn-primary">Save</a>
     </form>
     
