@@ -14,6 +14,7 @@
               <th>ID</th>
               <th>Title</th>
               <th>Slug</th>
+              <th>Category</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -23,14 +24,11 @@
                 <td>{{$post->id}}</td>
                 <td>{{$post->title}}</td>
                 <td>{{$post->slug}}</td>
+                <td>{{$post->category->name ?? '-'}}</td>
                 <td>
                   <a href="{{route('admin.posts.show', ['post' => $post->id])}} " class="btn btn-info text-light">Details</a>
                   <a href="{{route('admin.posts.edit', ['post' => $post->id])}}" class="btn btn-warning">Edit</a>
-                  <form class="d-inline" action="{{route('admin.posts.destroy', ['post' => $post->id])}}" method="post">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn btn-danger">Delete</button>
-                  </form>
+                  <a href="{{route('admin.posts.previewdelete', ['post' => $post->id])}}" class="btn btn-danger">Delete</a>
                 </td>
               </tr>
             @empty {{-- in case there's no records, $posts contains an empty collection --}}

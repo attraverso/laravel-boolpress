@@ -107,11 +107,11 @@ class PostController extends Controller
     return redirect()->route('admin.posts.index');
   }
 
-  public function previewdelete(Post $post)
+  public function previewdelete($id)
   {
-    // TODO : finish this! view, route&all
+    $post = Post::find($id);
     /** You don't care about prettifiying the url, since crawlers don't have access to pw-protected spaces */
-    return view('admin.posts.previewdelete', ['posts', $post->id]);
+    return view('admin.posts.previewdelete', compact('post'));
   }
 
   /**
@@ -120,9 +120,8 @@ class PostController extends Controller
    * @param  int  $id
    * @return \Illuminate\Http\Response
    */
-  public function destroy($id)
+  public function destroy(Post $post)
   {
-    $post = Post::find($id);
     $post->delete();
     return redirect()->route('admin.posts.index');
   }
