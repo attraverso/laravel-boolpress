@@ -2,7 +2,10 @@
 
 @section('content')
   <div class="container mt-3">
-    <h1>Write new post</h1>
+    <div class="d-flex justify-content-between align-items-center">
+      <h1>Write new post</h1>
+      <a href="{{route('admin.posts.index')}}" class="btn btn-secondary">Back to list</a>
+    </div>
     @if ($errors->any())
       <div class="alert alert-danger">
         <ul>
@@ -24,9 +27,10 @@
       </div>
       <div class="form-group">
         <label for="post-category">Category</label>
-        <select name="category_id" id="post-category">
+        <select id="post-category" name="category_id">
+          <option value="-1">Choose category</option>
           @foreach ($categories as $category)
-            <option value="{{$category->id}} ">{{$category->name}}</option>
+            <option value="{{$category->id}}">{{$category->name}}</option>
           @endforeach
         </select>
       </div>

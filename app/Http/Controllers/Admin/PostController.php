@@ -29,7 +29,8 @@ class PostController extends Controller
    */
   public function create()
   {
-    return view('admin.posts.create');
+    $categories = Category::all();
+    return view('admin.posts.create', compact('categories'));
   }
 
   /**
@@ -47,8 +48,16 @@ class PostController extends Controller
     /* $request initializes $data with an array */
     $data = $request->all();
     $slug = Str::of($data['title'])->slug('-');
-    $data['slug'] = $slug; 
-    var_dump($data);
+    $rawSlug = $slug;
+    $postFound = Post::where('slug', $slug)->first();
+    $counter = 0;
+    while ($postFound) {
+      $counter++;
+      $slug = $rawSlug . '-' . $counter;
+      $postFound = Post::where('slug', $slug)->first();
+    }
+    $data['slug'] = $slug;
+    // dd($data);
     $newPost = new Post();
     $newPost->fill($data);
     $newPost->save();
@@ -81,7 +90,8 @@ class PostController extends Controller
   public function edit($id)
   {
     $post = Post::find($id);
-    return view('admin.posts.edit', compact('post'));
+    $categories = Category::all();
+    return view('admin.posts.edit', compact('post', 'categories'));
   }
 
   /**
@@ -100,10 +110,17 @@ class PostController extends Controller
     /* $request initializes $data with an array */
     $data = $request->all();
     $slug = Str::of($data['title'])->slug('-');
+    $rawSlug = $slug;
+    $postFound = Post::where('slug', $slug)->first();
+    $counter = 0;
+    while ($postFound) {
+      $counter++;
+      $slug = $rawSlug . '-' . $counter;
+      $postFound = Post::where('slug', $slug)->first();
+    }
     $data['slug'] = $slug;
     $post = Post::find($id);
     $post->update($data);
-    $post->save();
     return redirect()->route('admin.posts.index');
   }
 
