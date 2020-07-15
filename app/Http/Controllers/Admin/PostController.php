@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Post;
 use App\Category;
+use App\Tag;
 
 class PostController extends Controller
 {
@@ -30,7 +31,8 @@ class PostController extends Controller
   public function create()
   {
     $categories = Category::all();
-    return view('admin.posts.create', compact('categories'));
+    $tags = Tag::all();
+    return view('admin.posts.create', compact('categories', 'tags'));
   }
 
   /**
@@ -45,7 +47,7 @@ class PostController extends Controller
       'title' => 'required|max:255|unique:posts,title',
       'content' => 'required'
     ]);
-    /* $request initializes $data with an array */
+    /* $request initializes $data with an ARRAY? //FIXME find out!*/
     $data = $request->all();
     $slug = Str::of($data['title'])->slug('-');
     $rawSlug = $slug;
@@ -59,8 +61,16 @@ class PostController extends Controller
     $data['slug'] = $slug;
     // dd($data);
     $newPost = new Post();
+    /* You can use fill() to populate a Model's properties, which means a table's columns */
     $newPost->fill($data);
     $newPost->save();
+    // You can't use fill() for tags as they're not on the Post Model / posts table
+    // Check whether tag_ids exists, since if no checkboxes were selected, you won't get any 'tag_ids' key in $data, not even with an empty array
+    if (!empty($data['tag_ids'])) {
+      // TODO check whether the ids in tag_ids are valid or maliciously sent via html manipulation (0715_0128)
+      // Ferry the tag_ids array you initialized in $data from $request directly into sync()
+     $newPost->tags()->sync($data['tag_ids']);
+    }
     return redirect()->route('admin.posts.index');
   }
 
@@ -90,8 +100,9 @@ class PostController extends Controller
   public function edit($id)
   {
     $post = Post::find($id);
+    $tags = Tag::all();
     $categories = Category::all();
-    return view('admin.posts.edit', compact('post', 'categories'));
+    return view('admin.posts.edit', compact('post', 'categories', 'tags'));
   }
 
   /**
@@ -121,6 +132,11 @@ class PostController extends Controller
     $data['slug'] = $slug;
     $post = Post::find($id);
     $post->update($data);
+    if (!empty($data['tag_ids'])) {
+      // TODO check whether the ids in tag_ids are valid or maliciously sent via html manipulation (0715_0128)
+      // Ferry the tag_ids array you initialized in $data from $request directly into sync()
+     $post->tags()->sync($data['tag_ids']);
+    }
     return redirect()->route('admin.posts.index');
   }
 

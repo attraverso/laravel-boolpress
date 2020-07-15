@@ -28,18 +28,22 @@
       <div class="form-group">
         <label for="post-category">Category</label>
         <select id="post-category" name="category_id">
-          <option value="-1">Choose category</option>
+          <option value="">Choose category</option>
           @foreach ($categories as $category)
             <option value="{{$category->id}}">{{$category->name}}</option>
           @endforeach
         </select>
-        <div class="form-group">
-          <label for="post-tags">Tags</label>
-          @foreach ($tags as $tag)
-            <input type="checkbox" name="" id="post-tags" value="">
-            <label for="post-tags">Tags</label>
-          @endforeach
-        </div>
+      </div>
+      <div class="form-group">
+        <p>Tags</p>
+        @foreach ($tags as $tag)
+          <label class="form-check-label mr-1" for="post-tags">
+            {{-- the values of all the selected options get written into the tag_ids array.
+              If I used tag_ids without [], only the value of the last marked checkbox would've been saved
+              //FIXME clicking on any label will only ever mark the first checkbox --}}
+              <input type="checkbox" name="tag_ids[]" id="post-tags" value="{{$tag->id}}" {{in_array($tag->id, old('tag_ids', [])) ? 'checked' : ''}} >{{$tag->name}}
+          </label>
+        @endforeach
       </div>
       <button type="submit" class="btn btn-primary">Save</a>
     </form>

@@ -35,6 +35,15 @@
           @endforeach
         </select>
       </div>
+      <div class="form-group">
+        <p>Tags</p>
+        @foreach ($tags as $tag)
+          <label class="form-check-label mr-1" for="post-tags">
+            {{-- see admin.posts.create for use of tag_ids[] --}}
+            <input type="checkbox" name="tag_ids[]" id="post-tags" value="{{$tag->id}}" {{in_array($tag->id, old('tag_ids', [])) ? 'checked' : ''}} >{{$tag->name}}
+          </label>
+        @endforeach
+      </div>
       <button type="submit" class="btn btn-primary">Save</a>
     </form>
     

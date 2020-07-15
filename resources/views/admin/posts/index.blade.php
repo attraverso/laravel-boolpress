@@ -25,8 +25,20 @@
                 <td>{{$post->id}}</td>
                 <td>{{$post->title}}</td>
                 <td>{{$post->slug}}</td>
-                <td><a href="{{route('categories.show', ['category', $post->category->id])}}">{{$post->category->name ?? '-'}}</a></td>
-                <td>*placeholder*</td>
+                <td>
+                  @if ($post->category)
+                    <a href="{{route('categories.show', ['category', $post->category->id])}}">{{$post->category->name ?? '-'}}</a>
+                  @else
+                    -
+                  @endif
+                </td>
+                <td>
+                  @forelse ($post->tags as $tag)
+                    {{$tag->name}}{{ $loop->last ? '' : ','}}
+                  @empty
+                    -
+                  @endforelse
+                </td>
                 <td>
                   <a href="{{route('admin.posts.show', ['post' => $post->id])}} " class="btn btn-info text-light">Details</a>
                   <a href="{{route('admin.posts.edit', ['post' => $post->id])}}" class="btn btn-warning">Edit</a>

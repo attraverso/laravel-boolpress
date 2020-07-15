@@ -13,6 +13,12 @@
       <p>{{$post->content}}</p>
       <p><small>Slug: {{$post->slug}}</small></p>
       <p><small>Category: {{$post->category->name ?? '-'}}</small></p>
+      <p><small>Tags:
+        @forelse ($post->tags as $tag)
+          {{$tag->name}}{{ $loop->last ? '' : ','}}
+        @empty
+          -
+        @endforelse</small></p>
     </div>
   </div>
     
