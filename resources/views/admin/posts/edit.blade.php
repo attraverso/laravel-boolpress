@@ -31,7 +31,11 @@
         <select name="category_id" id="post-category" class="form-control">
           <option value="-1">Choose category</option>
           @foreach ($categories as $category)
-            <option value="{{$category->id}}" {{old('category_id', $post->category->id) == $category->id ? 'selected' : ''}}>{{$category->name}}</option>
+            <option value="{{$category->id}}"
+              @if ($post->category)
+                {{old('category_id', $post->category->id) == $category->id ? 'selected' : ''}}
+              @endif
+              >{{$category->name}}</option>
           @endforeach
         </select>
       </div>
@@ -40,7 +44,14 @@
         @foreach ($tags as $tag)
           <label class="form-check-label mr-1" for="post-tags">
             {{-- see admin.posts.create for use of tag_ids[] --}}
-            <input type="checkbox" name="tag_ids[]" id="post-tags" value="{{$tag->id}}" {{in_array($tag->id, old('tag_ids', [])) ? 'checked' : ''}} >{{$tag->name}}
+            <input type="checkbox" name="tag_ids[]" id="post-tags" value="{{$tag->id}}"
+            @if ($errors->any())
+              {{in_array($tag->id, old('tag_ids', [])) ? 'checked' : ''}}
+            @else
+              {{$post->tags->contains($tag)}}
+            @endif
+            >
+            {{$tag->name}}
           </label>
         @endforeach
       </div>
