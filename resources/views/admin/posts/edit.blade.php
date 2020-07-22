@@ -29,7 +29,8 @@
       <div class="form-group">
         <label for="post-category">Content</label> 
         <select name="category_id" id="post-category" class="form-control">
-          <option value="-1">Choose category</option>
+          {{-- an empty value for the explanatory option makes it possible for the user to not choose a category without breaking everything --}}
+          <option value="">Choose category</option>
           @foreach ($categories as $category)
             <option value="{{$category->id}}"
               @if ($post->category)

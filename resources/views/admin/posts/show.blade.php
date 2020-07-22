@@ -18,7 +18,12 @@
           {{$tag->name}}{{ $loop->last ? '' : ','}}
         @empty
           -
-        @endforelse</small></p>
+        @endforelse
+      </small></p>
+      {{-- Invoke a function that automatically combines properties together (see Post model) --}}
+      <p><small>Title/slug comparison:<br>
+        {{$post->compareTitleSlug()}}
+      </small></p>
     </div>
   </div>
     

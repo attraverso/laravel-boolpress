@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 use App\Post;
 use App\Category;
 use App\Tag;
+use App\PostTag;
 
 class PostController extends Controller
 {
@@ -18,7 +19,8 @@ class PostController extends Controller
    */
   public function index()
   {
-    $posts = Post::all();
+    /** $posts is initialized with a collection */
+    $posts = Post::with('category')->get();
     /** in case there's no records in the databast, posts contains an empty collection */
     return view('admin.posts.index', compact('posts'));
   }
@@ -41,6 +43,7 @@ class PostController extends Controller
    * @param  \Illuminate\Http\Request  $request
    * @return \Illuminate\Http\Response
    */
+  /** dependency injection: telling PHP that the parameter in the function MUST be an object of type Request */
   public function store(Request $request)
   {
     $request->validate([
@@ -81,14 +84,68 @@ class PostController extends Controller
    */
   public function show($id)
   {
-    $post = Post::find($id);
-    /** check whether the post actually exists -> in case people tamper with the URLs */
-    if ($post) {
-      /** You don't care about prettifiying the url, since crawlers don't have access to pw-protected spaces */
-       return view('admin.posts.show', compact('post'));
-    } else {
-      return abort('404');
-    }
+      /** I need to be sure that the at least the ids are all different, otherwise I might make the same connection multiple times?*/
+      $post_tag_coll = PostTag::all();
+      $pt_combos_store = [];
+        foreach ($post_tag_coll as $post_tag) {
+        $pt_combo = $post_tag->post_id . '-' . $post_tag->tag_id;
+        array_push($pt_combos_store, $pt_combo);
+      }
+      // dd($pt_combos_store);
+
+      $available_posts = [];
+      $posts = Post::all();
+      foreach ($posts as $post) {
+        if (!in_array($post->id, $available_posts)) {
+          array_push($available_posts, $post->id);
+        }
+      }
+      // dd($available_posts);
+
+      $available_tags = [];
+      $tags = Tag::all();
+      foreach ($tags as $tag) {
+        if (!in_array($tag->id, $available_tags)) {
+          array_push($available_tags, $tag->id);
+        }
+      }
+      // dd($available_tags);
+
+      /** CODICE DA PROVARE */
+      // $final_array = [];
+      // while (count($final_array) <= 10) { 
+      //   $fake_post = array_rand($available_posts);
+      //   $fake_tag = array_rand($available_tags);
+      //   $new_combo = $fake_post . '-' . $fake_tag;
+      //   if (!in_array($new_combo, $final_array)) {
+      //     array_push($final_array, $new_combo);
+      //     $tag = Tag::where('id', $fake_tag)->first();
+      //     $snafu = $tag->post;
+      //     dd($snafu);
+      //     $tag->post()->attach($fake_post);
+      //   }
+      // /** otherwise, populate an array with all the available IDs and choose randomly between those */
+      // }
+      // dd($final_array);
+
+    /** CODICE DA RIPRISTINARE ALLA FINE */
+    // /** $post is initialized with a single Post object */
+    // $post = Post::find($id);
+    // $pts = PostTag::all();
+    // $ptmatches_store = [];
+    // foreach ($pts as $pt) {
+    //    $ptmatch = $pt->post_id . '-' . $pt->tag_id;
+    //    array_push($ptmatches_store, $ptmatch);
+    // }
+    // dd($ptmatches_store);
+
+    // /** check whether the post actually exists -> in case people tamper with the URLs */
+    // if ($post) {
+    //   /** You don't care about prettifiying the url, since crawlers don't have access to pw-protected spaces */
+    //    return view('admin.posts.show', compact('post'));
+    // } else {
+    //   return abort('404');
+    // }
   }
 
   /**
@@ -129,13 +186,14 @@ class PostController extends Controller
     ]);
     /* $request initializes $data with an array */
     $data = $request->all();
-    $slug = Str::of($data['title'])->slug('-');
+    $slug = Str::of($data['title'])->slug('-'); /* //FIXME: check wth is happening here <- */
     $rawSlug = $slug;
-    $postFound = Post::where('slug', $slug)->first();
+    $postFound = Post::where('slug', $slug)->get()->isNotEmpty();
     $counter = 0;
-    while ($postFound) {
+    while ($postFound == true) {
       $counter++;
       $slug = $rawSlug . '-' . $counter;
+      // dd($slug);
       $postFound = Post::where('slug', $slug)->first();
     }
     $data['slug'] = $slug;

@@ -11,6 +11,7 @@ class Categories extends Seeder
      *
      * @return void
      */
+    /** this instance of parameters is a Singleton design pattern */
     public function run(Faker $faker)
     {
       for ($i=0; $i < 6; $i++) { 
