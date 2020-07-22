@@ -27,7 +27,7 @@
         <textarea class="form-control" id="post-content" name="content" placeholder="Inspiring post">{{old('content', $post->content)}}</textarea>
       </div>
       <div class="form-group">
-        <label for="post-category">Content</label>
+        <label for="post-category">Content</label> 
         <select name="category_id" id="post-category" class="form-control">
           <option value="-1">Choose category</option>
           @foreach ($categories as $category)
@@ -43,12 +43,16 @@
         <p>Tags</p>
         @foreach ($tags as $tag)
           <label class="form-check-label mr-1" for="post-tags">
-            {{-- see admin.posts.create for use of tag_ids[] --}}
+            {{-- see the view admin.posts.create for why use tag_ids[] as name --}}
             <input type="checkbox" name="tag_ids[]" id="post-tags" value="{{$tag->id}}"
+            {{-- //TODO: alternative, more difficult? method: "from the $post->tags collection, extract the column and make it into an array" --}}
+            {{-- if there are errors it means that the values were sent and can thus be displayed through old() --}}
             @if ($errors->any())
               {{in_array($tag->id, old('tag_ids', [])) ? 'checked' : ''}}
+              {{-- if there are no errors and we land in this page, it must mean there are no old values -> show what's in the database for that post --}}
             @else
-              {{$post->tags->contains($tag)}}
+              {{-- if no tags can be found $post->tags won't return an error, but an empty collection -> the evaluation can be made -> worst-case scenario, it evaluates to false --}}
+              {{$post->tags->contains($tag) ? 'checked' : ''}}
             @endif
             >
             {{$tag->name}}

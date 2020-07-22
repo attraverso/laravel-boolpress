@@ -39,9 +39,10 @@
         @foreach ($tags as $tag)
           <label class="form-check-label mr-1" for="post-tags">
             {{-- the values of all the selected options get written into the tag_ids array.
-              If you'd used tag_ids without [], only the value of the last marked checkbox would've been saved
+              * If you'd used tag_ids without [], only the value of the last marked checkbox would've been saved
+              ** In case of errors you need to display again any values that had previously been checked. Use in_array to see whether the current tag ID was among those values, and provide a old() with a default value of empty array as alternative case old() isn't storing any actual old values, as in_array can't accept null as a second argument.
               //FIXME clicking on any label will only ever mark the first checkbox --}}
-              <input type="checkbox" name="tag_ids[]" id="post-tags" value="{{$tag->id}}" {{in_array($tag->id, old('tag_ids', [])) ? 'checked' : ''}} >{{$tag->name}}
+              <input type="checkbox" name="{{--*--}}{{tag_ids[]}}" id="post-tags" value="{{$tag->id}}" {{--**--}}{{in_array($tag->id, old('tag_ids', [])) ? 'checked' : ''}} >{{$tag->name}}
           </label>
         @endforeach
       </div>
