@@ -18,7 +18,7 @@ class Post extends Model
   }
 
   public function postTags() {
-    return $this->hasMany('App\PostTag', 'post_id', 'id');
+    return $this->belongsToMany('App\PostTag', 'post_id', 'id');
   }
 
   /** if you need to often combine the same object properties together (eg first/last name) you can create a function inside the appropriate model, and then call the function on your object from the view */

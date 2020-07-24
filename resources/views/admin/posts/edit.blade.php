@@ -22,6 +22,7 @@
         <label for="post-title">Title</label>
         <input type="text" class="form-control" id="post-title" name="title" placeholder="Engaging title" value="{{old('title', $post->title)}} ">
       </div>
+      <p><small>Slug: {{$post->slug}} </small></p>
       <div class="form-group">
         <label for="post-content">Content</label>
         <textarea class="form-control" id="post-content" name="content" placeholder="Inspiring post">{{old('content', $post->content)}}</textarea>

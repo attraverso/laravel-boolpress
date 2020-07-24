@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 use App\Post;
 use App\Category;
 use App\Tag;
@@ -84,68 +85,23 @@ class PostController extends Controller
    */
   public function show($id)
   {
-      /** I need to be sure that the at least the ids are all different, otherwise I might make the same connection multiple times?*/
-      $post_tag_coll = PostTag::all();
-      $pt_combos_store = [];
-        foreach ($post_tag_coll as $post_tag) {
-        $pt_combo = $post_tag->post_id . '-' . $post_tag->tag_id;
-        array_push($pt_combos_store, $pt_combo);
-      }
-      // dd($pt_combos_store);
-
-      $available_posts = [];
-      $posts = Post::all();
-      foreach ($posts as $post) {
-        if (!in_array($post->id, $available_posts)) {
-          array_push($available_posts, $post->id);
-        }
-      }
-      // dd($available_posts);
-
-      $available_tags = [];
-      $tags = Tag::all();
-      foreach ($tags as $tag) {
-        if (!in_array($tag->id, $available_tags)) {
-          array_push($available_tags, $tag->id);
-        }
-      }
-      // dd($available_tags);
-
-      /** CODICE DA PROVARE */
-      // $final_array = [];
-      // while (count($final_array) <= 10) { 
-      //   $fake_post = array_rand($available_posts);
-      //   $fake_tag = array_rand($available_tags);
-      //   $new_combo = $fake_post . '-' . $fake_tag;
-      //   if (!in_array($new_combo, $final_array)) {
-      //     array_push($final_array, $new_combo);
-      //     $tag = Tag::where('id', $fake_tag)->first();
-      //     $snafu = $tag->post;
-      //     dd($snafu);
-      //     $tag->post()->attach($fake_post);
-      //   }
-      // /** otherwise, populate an array with all the available IDs and choose randomly between those */
-      // }
-      // dd($final_array);
-
-    /** CODICE DA RIPRISTINARE ALLA FINE */
-    // /** $post is initialized with a single Post object */
-    // $post = Post::find($id);
-    // $pts = PostTag::all();
-    // $ptmatches_store = [];
-    // foreach ($pts as $pt) {
-    //    $ptmatch = $pt->post_id . '-' . $pt->tag_id;
-    //    array_push($ptmatches_store, $ptmatch);
-    // }
+    /** $post is initialized with a single Post object */
+    $post = Post::find($id);
+    $pts = PostTag::all();
+    $ptmatches_store = [];
+    foreach ($pts as $pt) {
+       $ptmatch = $pt->post_id . '-' . $pt->tag_id;
+       array_push($ptmatches_store, $ptmatch);
+    }
     // dd($ptmatches_store);
 
-    // /** check whether the post actually exists -> in case people tamper with the URLs */
-    // if ($post) {
-    //   /** You don't care about prettifiying the url, since crawlers don't have access to pw-protected spaces */
-    //    return view('admin.posts.show', compact('post'));
-    // } else {
-    //   return abort('404');
-    // }
+    /** check whether the post actually exists -> in case people tamper with the URLs */
+    if ($post) {
+      /** You don't care about prettifiying the url, since crawlers don't have access to pw-protected spaces */
+       return view('admin.posts.show', compact('post'));
+    } else {
+      return abort('404');
+    }
   }
 
   /**
@@ -157,6 +113,7 @@ class PostController extends Controller
   public function edit($id)
   {
     /** check whether the post actually exists -> in case people tamper with the URLs */
+    /** $post is initialized with an object of type Post */
     $post = Post::find($id);
     if ($post) {
        // alternative to compact to ferry data:
@@ -185,19 +142,19 @@ class PostController extends Controller
       'content' => 'required'
     ]);
     /* $request initializes $data with an array */
-    $data = $request->all();
-    $slug = Str::of($data['title'])->slug('-'); /* //FIXME: check wth is happening here <- */
-    $rawSlug = $slug;
-    $postFound = Post::where('slug', $slug)->get()->isNotEmpty();
+    $data = $request->all(); //OK
+    $post = Post::find($id);
+    $newSlug = Str::of($data['title'])->slug('-'); /* //FIXME: check wth is happening here <- */
+    $rawSlug = $newSlug;
+    $postFound = Post::where('slug', $newSlug)->first();
     $counter = 0;
-    while ($postFound == true) {
+    while ($postFound && $post->id != $postFound->id) {
+      
       $counter++;
       $slug = $rawSlug . '-' . $counter;
-      // dd($slug);
       $postFound = Post::where('slug', $slug)->first();
+      $data['slug'] = $slug;
     }
-    $data['slug'] = $slug;
-    $post = Post::find($id);
     $post->update($data);
     // Check whether tag_ids exists because, if no checkboxes were selected, you wouldn't get any 'tag_ids' key in $data (not even with an empty array as value) so this wouldn't delete any existing post->tag relationship in the post_tag table
     if (!empty($data['tag_ids'])) {
