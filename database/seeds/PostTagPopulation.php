@@ -14,15 +14,16 @@ class PostTagPopulation extends Seeder
    */
   public function run()
   {
-    /** I need to be sure that the at least the ids are all different, otherwise I might make the same connection multiple times?*/
+    //create an array with all the post post-tag combinations already in the pivot table
     $postTagColl = PostTag::all();
     $ptCombosStore = [];
-      foreach ($postTagColl as $postTag) {
+    foreach ($postTagColl as $postTag) {
+      //format the output so that you can't mix up tags and posts (eg. 112: is it post 11 w/ tag 2 or post 1 w/ tag 12?)
       $ptCombo = $postTag->post_id . '-' . $postTag->tag_id;
       array_push($ptCombosStore, $ptCombo);
     }
-    // dd($pt_combos_store);
 
+    //create an array with all the post ids already present in the posts table
     $availablePosts = [];
     $posts = Post::all();
     foreach ($posts as $post) {
@@ -30,8 +31,8 @@ class PostTagPopulation extends Seeder
         array_push($availablePosts, $post->id);
       }
     }
-    // dd($available_posts);
 
+    //create an array with all the tags ids already present in the tags table
     $availableTags = [];
     $tags = Tag::all();
     foreach ($tags as $tag) {
@@ -39,27 +40,30 @@ class PostTagPopulation extends Seeder
         array_push($availableTags, $tag->id);
       }
     }
-    // dd($available_tags);
-    //FIXME: occhio che sta cosa rischia di scatenare un loop infinito se hai esaurito le possibili combinazioni, fai un contatore indipendente che dopo x tentativi a vuoto ti fa uscire a prescindere
-    $initial_array_count = count($ptCombosStore);
-    while (count($ptCombosStore) <= $initial_array_count + 10) { 
+    /** you could've just created and saved a new PostTag object, ya know?*/
+
+    //learn how many combos are already in the post_tag pivot
+    $initialArrayCount = count($ptCombosStore);
+    //initialize a counter that won't let you fall into an infinite loop in case all the available combos are already taken
+    $safetyCounter = 0;
+    //while the total number of lines in post_tag is lower than the initial count + 10 (I want to add 10 items) AND the safety loop hasn't reached 50 unsuccessful iterations
+    while (count($ptCombosStore) <= $initialArrayCount + 10 && $safetyCounter < 50) { 
+      //get a random index from the available posts/tags array
       $fakePostIndex = array_rand($availablePosts);
-      $fakePost = $availablePosts[$fakePostIndex];
-      // dd('post' . $fakePost);
       $fakeTagIndex = array_rand($availableTags);
+      //get corresponding id
+      $fakePost = $availablePosts[$fakePostIndex];
       $fakeTag = $availableTags[$fakeTagIndex];
-      // dd('tag' . $fakeTag);
+      //format the results the same as in the ptCombosStore array
       $newCombo = $fakePost . '-' . $fakeTag;
-      // dd('combo' . $new_combo);
+      //if you don't already have that combination in ptCombosStore, add it and create new record in the pivot
       if (!in_array($newCombo, $ptCombosStore)) {
         array_push($ptCombosStore, $newCombo);
         $post = Post::where('id', $fakePost)->first();
-        $snafu = $post->tag;
-        // dd($snafu);
         $post->tags()->attach($fakeTag);
       }
-    /** otherwise, populate an array with all the available IDs and choose randomly between those */
+
+      $safetyCounter++;
     }
-    dd($ptCombosStore);
   }
 }

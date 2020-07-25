@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\DB;
 use App\Post;
 use App\Category;
 use App\Tag;
@@ -67,10 +66,11 @@ class PostController extends Controller
     /* You can use fill() to populate a Model's properties, which means a table's columns */
     $newPost->fill($data);
     $newPost->save();
-    // You can't use fill() for tags as they're not on the Post Model / posts table
-    // Check whether tag_ids exists, since if no checkboxes were selected, you wouldn't get any 'tag_ids' key in $data, not even with an empty array as value
+    /* You can't use fill() for tags as they're not on the Post Model / posts table */
+    //Check whether tag_ids exists, since if no checkboxes were selected, you wouldn't get any 'tag_ids' key in $data, not even with an empty array as value
     if (!empty($data['tag_ids'])) {
-      // TODO check whether the ids in tag_ids are valid tags that are already stored in my db or maliciously sent via html manipulation (0715_0228 -> where tag id in table? find tag?)
+      /* if you let users create/edit posts, and you want them to only use your filing system, remember to check whether the ids in $data['tag_ids'] are valid tags that are already stored in your db or whether they're maliciously sent via html manipulation (0715_0228 -> where tag id in table? find tag?) */
+      
       // Ferry the tag_ids array you get in $data (from $request->all()) directly into sync()
      $newPost->tags()->sync($data['tag_ids']);
     }
@@ -85,7 +85,7 @@ class PostController extends Controller
    */
   public function show($id)
   {
-    /** $post is initialized with a single Post object */
+    // $post is initialized with a single Post object
     $post = Post::find($id);
     $pts = PostTag::all();
     $ptmatches_store = [];
@@ -112,11 +112,11 @@ class PostController extends Controller
    */
   public function edit($id)
   {
-    /** check whether the post actually exists -> in case people tamper with the URLs */
+    // check whether the post actually exists -> in case people tamper with the URLs
     /** $post is initialized with an object of type Post */
     $post = Post::find($id);
     if ($post) {
-       // alternative to compact to ferry data:
+       /* alternative to compact to ferry data: */
       $data = [
         'post' => $post,
         'tags' => Tag::all(),
@@ -158,12 +158,12 @@ class PostController extends Controller
     $post->update($data);
     // Check whether tag_ids exists because, if no checkboxes were selected, you wouldn't get any 'tag_ids' key in $data (not even with an empty array as value) so this wouldn't delete any existing post->tag relationship in the post_tag table
     if (!empty($data['tag_ids'])) {
-      // TODO check whether the ids in tag_ids are valid or maliciously sent via html manipulation (0715_0128)
+      /* see same point in store() */
       // Ferry the tag_ids array you initialized in $data from $request directly into sync()
      $post->tags()->sync($data['tag_ids']);
     //in case the user has deselected all tags, remove any post/tag association
     } else {
-      // either one or the other is fine:
+      /** either one or the other is fine: */
       // $post->tags()->detach();
       $post->tags()->sync([]);
     }
